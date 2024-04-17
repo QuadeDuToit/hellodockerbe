@@ -1,0 +1,52 @@
+name: Build and Deploy Full-stack App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Front-end build and Docker image push
+      - name: Build and Push Vue.js Docker image
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          # Navigate to the front-end directory
+          cd frontend
+
+          # Build Vue.js project
+          npm install
+          npm run build
+
+          # Build and push Docker image
+          docker build -t qkdt/vue-app .
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push qkdt/vue-app
+
+      # Back-end build and Docker image push
+      - name: Build and Push Node.js with Express Docker image
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          # Navigate to the back-end directory
+          cd ../backend
+
+          # Build Node.js with Express project
+          npm install
+          # Add any necessary build steps here (e.g., compiling TypeScript, transpiling ES6)
+
+          # Build and push Docker image
+          docker build -t qkdt/node-express-app .
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push qkdt/node-express-app
+
+      # Deploy full-stack application using Docker Compose
+      - name: Deploy Full-stack Application
+        run: docker-compose -f docker-compose.yml up -d
