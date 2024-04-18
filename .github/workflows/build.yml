@@ -1,4 +1,4 @@
-name: Build and Deploy Vue.js App
+name: Build and Deploy Full-stack App
 
 on:
   push:
@@ -13,27 +13,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Install MySQL client for interacting with the database
+      - name: Install MySQL client
+        run: sudo apt-get install -y mysql-client
+
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
 
+      # Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Build Vue.js project
-        run: npm run build
+      # Run database migrations
+      - name: Run database migrations
+        run: npm run migrate
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      # Build and run API
+      - name: Build and run API
+        run: npm start
 
-      - name: Build and push Docker image
-        run: |
-          docker build -t qkdt/hellodocker .
-          docker push qkdt/hellodocker
-
-      - name: Show deployed containers
-        run: docker ps -a
+      # Deploy full-stack application using Docker Compose
+      - name: Deploy Full-stack Application
+        run: docker-compose -f docker-compose.yaml up -d
