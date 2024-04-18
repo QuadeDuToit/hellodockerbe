@@ -28,8 +28,8 @@ jobs:
         run: npm install
 
       # Run database migrations
-      - name: Run database migrations
-        run: npm run migrate
+      # - name: Run database migrations
+      #   run: npm run migrate
 
       # Build and run API
       - name: Build and run API
