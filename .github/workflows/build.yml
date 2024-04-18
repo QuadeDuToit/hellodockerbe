@@ -33,7 +33,7 @@ jobs:
 
       # Build and run API
       - name: Build and run API
-        run: npm start
+        run: node app.js
 
       # Deploy full-stack application using Docker Compose
       - name: Deploy Full-stack Application
